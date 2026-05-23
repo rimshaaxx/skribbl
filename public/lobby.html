@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lobby - Skribbl by Rose</title>
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@600;700&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/home.css"> <!-- We will reuse the stars background! -->
+    <link rel="stylesheet" href="css/lobby.css">
+</head>
+<body>
+    <!-- Our Twinkling Stars Background -->
+    <canvas id="starsCanvas"></canvas>
+
+    <div class="lobby-container">
+        
+        <!-- TOP BAR: Title, Player Count, Buttons -->
+        <header class="top-bar">
+            <h1 class="logo-small">Skribbl</h1>
+            <div class="player-count">
+                Players: <span id="playerCount">1</span>/15
+            </div>
+            <div class="top-buttons">
+                <button id="settingsBtn" class="icon-btn">⚙️ SETTINGS</button>
+                <button id="startBtn" class="start-btn">START GAME</button>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT: Players + Chat -->
+        <main class="lobby-main">
+            
+            <!-- LEFT SIDE: The Player Grid -->
+            <div class="player-section glass-panel">
+                <div id="playerGrid" class="player-grid">
+                    <!-- Players and their avatars will be injected here via JS -->
+                </div>
+            </div>
+
+            <!-- RIGHT SIDE: The Chat Box -->
+            <div class="chat-section glass-panel">
+                <div class="chat-header">Lobby Chat</div>
+                
+                <div id="chatMessages" class="chat-messages">
+                    <!-- We will put a welcome message here in JS -->
+                </div>
+                
+                <div class="chat-input-wrapper">
+                    <input type="text" id="chatInput" placeholder="Type a message..." autocomplete="off">
+                    <button id="sendChatBtn" class="send-btn">➤</button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- BOTTOM BAR: Room Code & Copy -->
+        <footer class="bottom-bar">
+            <div class="code-display">
+                ROOM CODE: <span id="displayRoomCode">----</span>
+            </div>
+            <button id="copyCodeBtn" class="copy-btn">📋 COPY</button>
+        </footer>
+
+    </div>
+
+    <!-- SETTINGS POPUP MODAL (Hidden by default) -->
+    <div id="settingsModal" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <h2>Room Settings</h2>
+            
+            <div class="setting-group">
+                <label>Max Players</label>
+                <select id="settingPlayers">
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8" selected>8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                    <option value="15">15</option>
+                </select>
+            </div>
+
+            <div class="setting-group">
+                <label>Rounds</label>
+                <select id="settingRounds">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
+
+            <div class="setting-group">
+                <label>Draw Time (Seconds)</label>
+                <select id="settingTime">
+                    <option value="100">100s</option>
+                    <option value="200">200s</option>
+                    <option value="250">250s</option>
+                    <option value="300">300s</option>
+                </select>
+            </div>
+
+            <div class="setting-group">
+                <label>Word Mode</label>
+                <select id="settingWordMode">
+                    <option value="normal">Normal</option>
+                    <option value="custom">Custom</option>
+                </select>
+            </div>
+
+            <button id="closeSettingsBtn" class="close-btn">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATIONS CONTAINER -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/lobby.js"></script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game - Skribbl by Rose</title>
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@600;700&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/home.css"> <!-- For the stars background -->
+    <link rel="stylesheet" href="css/game.css"> <!-- We will create this next! -->
+</head>
+<body>
+    <!-- Twinkling Stars Background -->
+    <canvas id="starsCanvas"></canvas>
+
+    <div class="game-master-container">
+        
+        <!-- TOP: DRAWING TOOLS (Only visible to the Drawer) -->
+        <div id="drawingTools" class="drawing-tools glass-panel hidden-tools">
+            
+            <!-- Tool Selection -->
+            <div class="tool-group">
+                <button class="tool-btn active" id="toolPen" title="Pen">✏️</button>
+                <button class="tool-btn" id="toolFill" title="Fill Bucket">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="#ffffff">
+                        <path d="M19,11.5C19,11.5 17,13.67 17,15A2,2 0 0,0 19,17A2,2 0 0,0 21,15C21,13.67 19,11.5 19,11.5M5.21,10L10,5.21L14.79,10M16.56,8.94L7.62,0L6.21,1.41L8.59,3.79L3.44,8.94C2.85,9.5 2.85,10.47 3.44,11.06L8.94,16.56C9.23,16.85 9.62,17 10,17C10.38,17 10.77,16.85 11.06,16.56L16.56,11.06C17.15,10.47 17.15,9.5 16.56,8.94Z" />
+                    </svg>
+                </button>
+                <button class="tool-btn" id="toolEraser" title="Eraser">🧹</button>
+            </div>
+
+            <!-- Brush Styles -->
+            <div class="tool-group">
+                <select id="brushStyle" class="brush-dropdown">
+                    <option value="pen">Pen</option>
+                    <option value="marker">Marker</option>
+                    <option value="brush">Brush</option>
+                    <option value="highlighter">Highlighter</option>
+                    <option value="spray">Spray Paint</option>
+                </select>
+            </div>
+
+            <!-- Brush Sizes (4 sizes) -->
+            <div class="tool-group sizes">
+                <button class="size-btn size-1" data-size="3" title="Small"></button>
+                <button class="size-btn size-2 active" data-size="8" title="Medium"></button>
+                <button class="size-btn size-3" data-size="15" title="Large"></button>
+                <button class="size-btn size-4" data-size="30" title="Extra Large"></button>
+            </div>
+
+            <!-- Color Palette (Injected via JS) + Custom Color Picker -->
+            <div class="tool-group palette" id="colorPalette">
+                <!-- 15 Colors will go here -->
+                <input type="color" id="customColorPicker" title="Custom Color" class="custom-color-picker">
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="tool-group actions">
+                <button class="action-btn" id="btnUndo" title="Undo">↩️</button>
+                <button class="action-btn" id="btnRedo" title="Redo">↪️</button>
+                <button class="action-btn" id="btnClear" title="Clear Canvas">🗑️</button>
+            </div>
+        </div>
+
+        <!-- TOP: SPECTATOR DASHBOARD (Only visible to Guessers) -->
+        <div id="guesserTools" class="drawing-tools glass-panel hidden-tools guesser-bar">
+            <div class="guesser-logo">
+                <span style="color: #2d00f7">S</span><span style="color: #6a00f4">p</span><span style="color: #8900f2">e</span><span style="color: #a100f2">c</span><span style="color: #bc00dd">t</span><span style="color: #db00b6">a</span><span style="color: #f20089">t</span><span style="color: #f20089">i</span><span style="color: #db00b6">n</span><span style="color: #bc00dd">g</span><span style="color: #a100f2">.</span><span style="color: #8900f2">.</span><span style="color: #6a00f4">.</span>
+            </div>
+            
+            <div id="funnyTaunt" class="funny-taunt">
+                "Processing this masterpiece..."
+            </div>
+        </div>
+
+        <!-- MAIN MIDDLE SECTION -->
+        <div class="game-layout">
+            
+            <!-- LEFT: LEADERBOARD & PLAYERS -->
+            <aside class="sidebar left-sidebar glass-panel">
+                <div class="sidebar-header">Leaderboard</div>
+                <div id="gamePlayerGrid" class="game-player-list">
+                    <!-- Players and scores injected via JS -->
+                </div>
+            </aside>
+
+            <!-- CENTER: THE CANVAS -->
+            <main class="canvas-wrapper glass-panel">
+                <!-- The actual drawing board -->
+                <canvas id="drawingCanvas"></canvas>
+                
+                <!-- Overlay text for when someone else is drawing -->
+                <!-- Overlay for Choosing Words / Waiting -->
+                <div id="canvasOverlay" class="canvas-overlay">
+                    
+                    <!-- 1. Normal Mode (4 Words) -->
+                    <div id="normalWordSelection" class="word-selection-box glass-panel hidden">
+                        <h2>Choose a word to draw!</h2>
+                        <div class="word-options" id="wordOptions">
+                            <button class="word-btn">Word 1</button>
+                            <button class="word-btn">Word 2</button>
+                            <button class="word-btn">Word 3</button>
+                            <button class="word-btn">Word 4</button>
+                        </div>
+                    </div>
+
+                    <!-- 2. Custom Mode (Type your own) -->
+                    <div id="customWordSelection" class="word-selection-box glass-panel hidden">
+                        <h2>Type what you want to draw!</h2>
+                        <div class="custom-word-input-group">
+                            <input type="text" id="customWordInput" placeholder="e.g. Spongebob..." autocomplete="off">
+                            <button id="submitCustomWordBtn" class="action-btn-neon">DRAW</button>
+                        </div>
+                    </div>
+
+                    <!-- 3. Guessers Waiting Screen -->
+                    <div id="waitingForDrawer" class="word-selection-box glass-panel">
+                        <h2 id="overlayText">Waiting for game to start...</h2>
+                    </div>
+                    <!-- 4. Game Over Screen -->
+                    <div id="gameOverScreen" class="word-selection-box glass-panel hidden">
+                        <h2>Game Over!</h2>
+                        <h3 id="winnerName" style="color: #00ff87; font-family: 'DynaPuff', cursive; font-size: 2.5rem; text-align: center; text-shadow: 0 0 15px #00ff87;"></h3>
+                        <p style="color: white; font-family: 'Outfit';">Returning to lobby...</p>
+                    </div>
+
+                </div>
+            </main>
+
+            <!-- RIGHT: THE CHAT & GUESSES -->
+            <aside class="sidebar right-sidebar glass-panel">
+                <div class="sidebar-header">Game Chat</div>
+                <div id="gameChatMessages" class="chat-messages">
+                    <!-- Chat & guesses appear here -->
+                </div>
+                <div class="chat-input-wrapper">
+                    <input type="text" id="gameChatInput" placeholder="Guess the word here..." autocomplete="off">
+                    <button id="gameSendChatBtn" class="send-btn">➤</button>
+                </div>
+            </aside>
+
+        </div>
+
+        <!-- BOTTOM: TIMER & WORD DISPLAY -->
+        <footer class="bottom-hud glass-panel">
+            <div class="timer-container" id="timerContainer">
+                ⏱️ <span id="timeRemaining">--</span>
+            </div>
+            
+            <div class="word-display" id="wordDisplay">
+                _ _ _ _ _ _
+            </div>
+            
+            <div class="round-display">
+                Round: <span id="currentRound">1</span> / <span id="totalRounds">3</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- TOAST NOTIFICATIONS -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

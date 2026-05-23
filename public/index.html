@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skribbl by Rose</title>
+    
+    <!-- Importing Playful Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=DynaPuff:wght@600;700&family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Linking your CSS -->
+    <link rel="stylesheet" href="css/home.css">
+</head>
+<body>
+
+    <!-- This canvas will hold our twinkling stars background -->
+    <canvas id="starsCanvas"></canvas>
+
+    <!-- Everything sits inside here to stay centered above the stars -->
+    <div class="content-wrapper">
+        
+        <!-- The Bouncing Logo -->
+        <h1 class="logo">
+            <span>S</span><span>k</span><span>r</span><span>i</span><span>b</span><span>b</span><span>l</span>
+        </h1>
+
+        <!-- The Two Panels -->
+        <div class="panels-container">
+            
+            <!-- LEFT PANEL: Avatar Builder -->
+            <div class="panel left-panel">
+                <div class="avatar-display" id="avatarDisplay">
+                    <!-- Avatar will be drawn here -->
+                </div>
+                
+                <!-- Avatar Controls -->
+                <div class="avatar-controls">
+                    <div class="control-row">
+                        <button class="arrow-btn" id="prevColor">&lt;</button>
+                        <span>COLOR</span>
+                        <button class="arrow-btn" id="nextColor">&gt;</button>
+                    </div>
+                    <div class="control-row">
+                        <button class="arrow-btn" id="prevEyes">&lt;</button>
+                        <span>EYES</span>
+                        <button class="arrow-btn" id="nextEyes">&gt;</button>
+                    </div>
+                    <div class="control-row">
+                        <button class="arrow-btn" id="prevMouth">&lt;</button>
+                        <span>MOUTH</span>
+                        <button class="arrow-btn" id="nextMouth">&gt;</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL: Join/Create Form -->
+            <div class="panel right-panel">
+                <div class="input-group">
+                    <label>ENTER NAME</label>
+                    <input type="text" id="usernameInput" autocomplete="off">
+                </div>
+
+                <div class="input-group">
+                    <label>ENTER ROOM CODE</label>
+                    <input type="text" id="roomCodeInput" placeholder="JOIN A ROOM..." autocomplete="off">
+                </div>
+
+                <!-- We will style this with that awesome Uiverse button later -->
+                <button class="create-btn" id="createGameBtn">
+                    <span>CREATE ROOM</span>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- The Footer -->
+        <footer class="footer">
+            Skribbl <span class="dot">✦</span> made by Rose
+        </footer>
+
+    </div>
+
+    <!-- Linking your JS -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/home.js"></script>
+</body>
+</html>

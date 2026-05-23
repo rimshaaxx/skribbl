@@ -1,0 +1,329 @@
+/* --- 1. GLOBAL SETUP --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    /* Using a very dark purple/black so the stars and neon colors pop! */
+    background-color: #05010a; 
+    font-family: 'Outfit', sans-serif;
+    color: white;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* We put the canvas behind everything */
+#starsCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+}
+
+.content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+    width: 100%;
+    max-width: 800px;
+}
+
+/* --- 2. HOVER BOUNCE LOGO --- */
+.logo {
+    font-family: 'DynaPuff', cursive;
+    font-size: 5rem;
+    margin-bottom: 40px;
+    display: flex;
+    gap: 5px;
+    text-shadow: 0px 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+.logo span {
+    display: inline-block;
+    /* This makes the movement smooth */
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    cursor: default;
+}
+
+/* When the mouse touches a letter, it jumps up and tilts slightly! */
+.logo span:hover {
+    transform: translateY(-15px) rotate(-10deg) scale(1.1);
+}
+
+.logo span:nth-child(1) { color: #2d00f7; }
+.logo span:nth-child(2) { color: #6a00f4; }
+.logo span:nth-child(3) { color: #8900f2; }
+.logo span:nth-child(4) { color: #a100f2; }
+.logo span:nth-child(5) { color: #bc00dd; }
+.logo span:nth-child(6) { color: #db00b6; }
+.logo span:nth-child(7) { color: #f20089; }
+
+
+/* --- 3. THE PANELS (Glassmorphism Effect) --- */
+.panels-container {
+    display: flex;
+    gap: 30px;
+    width: 100%;
+    justify-content: center;
+}
+
+.panel {
+    background: rgba(45, 0, 247, 0.1); /* Slight tint of your darkest purple */
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(137, 0, 242, 0.3);
+    border-radius: 20px;
+    padding: 30px;
+    width: 320px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* --- 4. AVATAR SELECTOR (Left Panel) --- */
+.left-panel {
+    align-items: center;
+    flex-direction: column; /* Stack vertically */
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+/* --- 4. AVATAR SELECTOR & STATUS DOT --- */
+:root {
+    --status-size: 22px; 
+    --status-gap: 4px; 
+    --status-offset: -2px; /* Pulls it slightly inside the circle */
+    --status-angle: 135deg; /* Puts the dot at the bottom right */
+}
+
+.left-panel {
+    align-items: center;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.avatar-display {
+    width: 120px;
+    height: 120px;
+    position: relative; /* Needed for the absolute status dot */
+    
+    /* The crazy trigonometry math from your CodePen! */
+    --d: calc(var(--status-size) + (var(--status-gap) * 2));
+    --r: calc((100% / 2) + var(--status-offset));
+    --x: calc(var(--r) * cos(var(--status-angle) - 90deg) + (100% / 2));
+    --y: calc(var(--r) * sin(var(--status-angle) - 90deg) + (100% / 2));
+}
+
+/* The Glowing Green "Online" Dot */
+.avatar-display::after {
+    content: "";
+    position: absolute;
+    width: var(--status-size);
+    height: var(--status-size);
+    background-color: #00ff87; /* Neon green */
+    border-radius: 50%;
+    top: calc(var(--y) - (var(--status-size) / 2));
+    left: calc(var(--x) - (var(--status-size) / 2));
+    box-shadow: 0 0 10px rgba(0, 255, 135, 0.6);
+    z-index: 2;
+}
+
+/* The robot image inside the circle */
+.avatar-display img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.2);
+    
+    /* This cuts out the exact shape of the dot + gap from the image! */
+    -webkit-mask-image: radial-gradient(var(--d) var(--d) at var(--x) var(--y), transparent calc(50% - 0.5px), black calc(50% + 0.5px));
+    mask-image: radial-gradient(var(--d) var(--d) at var(--x) var(--y), transparent calc(50% - 0.5px), black calc(50% + 0.5px));
+}
+
+.avatar-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+/* (Keep your existing .control-row and .arrow-btn CSS here!) */
+.control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    padding: 5px 10px;
+}
+.control-row span {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #d100d1;
+}
+.arrow-btn {
+    background: transparent;
+    border: none;
+    color: #f20089;
+    font-size: 1.5rem;
+    font-family: 'DynaPuff', cursive;
+    cursor: pointer;
+    transition: 0.2s;
+    padding: 0 10px;
+}
+.arrow-btn:hover {
+    color: #db00b6;
+    transform: scale(1.3);
+}
+
+.avatar-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.control-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.3); /* Dark pill-shape behind text */
+    border-radius: 8px;
+    padding: 5px 10px;
+}
+
+.control-row span {
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    color: #d100d1;
+}
+
+.arrow-btn {
+    background: transparent;
+    border: none;
+    color: #f20089;
+    font-size: 1.5rem;
+    font-family: 'DynaPuff', cursive;
+    cursor: pointer;
+    transition: 0.2s;
+    padding: 0 10px;
+}
+
+.arrow-btn:hover {
+    color: #db00b6;
+    transform: scale(1.3);
+}
+
+/* --- 5. JOIN / CREATE FORM (Right Panel) --- */
+.input-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 0.85rem;
+    letter-spacing: 2px;
+    color: #d100d1;
+    font-weight: 600;
+}
+
+.input-group input {
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid #6a00f4;
+    color: white;
+    padding: 12px 15px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #f20089;
+    box-shadow: 0 0 10px rgba(242, 0, 137, 0.4);
+}
+
+.input-group input::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+}
+
+/* --- 6. THE UIVERSE BUTTON --- */
+.create-btn {
+    position: relative;
+    text-decoration: none;
+    color: #fff;
+    /* Using your palette for the gradient border */
+    background: linear-gradient(45deg, #2d00f7, #bc00dd, #f20089);
+    padding: 14px 25px;
+    border-radius: 10px;
+    font-size: 1.2rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    margin-top: 10px;
+}
+
+.create-btn span {
+    position: relative;
+    z-index: 1;
+    letter-spacing: 1px;
+}
+
+.create-btn::before {
+    content: "";
+    position: absolute;
+    inset: 2px; /* This creates the gradient border thickness */
+    background: #080210; /* Dark inner background */
+    border-radius: 8px;
+    transition: 0.5s;
+}
+
+.create-btn:hover::before {
+    opacity: 0.5; /* Makes it glow lighter on hover */
+}
+
+.create-btn::after {
+    content: "";
+    position: absolute;
+    inset: 0px;
+    background: linear-gradient(45deg, #2d00f7, #bc00dd, #f20089);
+    border-radius: 10px;
+    transition: 0.5s;
+    opacity: 0;
+    filter: blur(15px); /* The glowing neon shadow! */
+    z-index: -1;
+}
+
+.create-btn:hover::after {
+    opacity: 1;
+}
+
+/* --- 7. FOOTER --- */
+.footer {
+    margin-top: 50px;
+    font-size: 1.1rem;
+    color: #b100e8;
+    font-family: 'DynaPuff', cursive;
+}
+
+.footer .dot {
+    color: #f20089;
+    font-size: 1.5rem;
+    vertical-align: middle;
+}

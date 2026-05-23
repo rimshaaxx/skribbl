@@ -1,0 +1,316 @@
+/* --- LOBBY LAYOUT --- */
+.lobby-container {
+    display: flex;
+    flex-direction: column;
+    width: 90vw;
+    max-width: 1200px;
+    height: 90vh;
+    z-index: 1;
+    gap: 20px;
+}
+
+/* Glassmorphism Panel Reusable Class */
+.glass-panel {
+    background: rgba(45, 0, 247, 0.15);
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(137, 0, 242, 0.3);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* --- TOP BAR --- */
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
+    border: 1px solid rgba(229, 0, 164, 0.3);
+}
+
+.logo-small {
+    font-family: 'DynaPuff', cursive;
+    font-size: 2rem;
+    margin: 0;
+    color: #f20089;
+    text-shadow: 0 0 10px rgba(242, 0, 137, 0.5);
+}
+
+.player-count {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #38fedc; /* Neon cyan */
+    letter-spacing: 1px;
+}
+
+.top-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.icon-btn, .start-btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Outfit', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    border: none;
+    transition: 0.2s;
+    color: white;
+}
+
+.icon-btn {
+    background: rgba(106, 0, 244, 0.4);
+    border: 1px solid #6a00f4;
+}
+.icon-btn:hover { background: rgba(106, 0, 244, 0.8); }
+
+.start-btn {
+    background: linear-gradient(45deg, #bc00dd, #f20089);
+    box-shadow: 0 0 15px rgba(242, 0, 137, 0.4);
+}
+.start-btn:hover { transform: scale(1.05); }
+.start-btn:disabled {
+    background: #555;
+    color: #999;
+    box-shadow: none;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* --- MAIN CONTENT (Grid + Chat) --- */
+.lobby-main {
+    display: flex;
+    gap: 20px;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.player-section {
+    flex: 3;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.chat-section {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+/* --- PLAYER GRID --- */
+.player-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 20px;
+}
+
+.player-card {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: center;
+    position: relative;
+    border: 1px solid transparent;
+    transition: 0.3s;
+}
+
+/* The host crown! */
+.host-crown {
+    position: absolute;
+    top: -15px;
+    right: -10px;
+    font-size: 1.8rem;
+    filter: drop-shadow(0 0 8px gold);
+    display: none; /* Hidden by default, shown via JS */
+}
+
+.player-card.is-host {
+    border-color: gold;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+}
+.player-card.is-host .host-crown {
+    display: block;
+}
+
+.player-card img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.player-name {
+    font-weight: bold;
+    color: white;
+    font-size: 1.1rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- CHAT BOX --- */
+.chat-header {
+    text-align: center;
+    font-weight: bold;
+    color: #a100f2;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.chat-msg { font-size: 0.95rem; line-height: 1.3; }
+.chat-msg .author { font-weight: bold; color: #bc00dd; }
+.chat-msg.system { color: #38fedc; font-style: italic; }
+
+.chat-input-wrapper {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input-wrapper input {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #6a00f4;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    outline: none;
+}
+.chat-input-wrapper input:focus { border-color: #f20089; }
+
+.send-btn {
+    background: #6a00f4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 15px;
+    cursor: pointer;
+}
+.send-btn:hover { background: #8900f2; }
+
+/* --- BOTTOM BAR --- */
+.bottom-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
+}
+
+.code-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: white;
+    letter-spacing: 2px;
+}
+#displayRoomCode {
+    color: #f5f557; /* Neon yellow */
+    font-family: monospace;
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 5px;
+}
+
+.copy-btn {
+    background: #2d00f7;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.copy-btn:hover { background: #6a00f4; }
+
+/* --- SETTINGS MODAL --- */
+.modal {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+}
+.modal.hidden { display: none; }
+
+.modal-content {
+    width: 400px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.modal-content h2 { text-align: center; color: #db00b6; margin-bottom: 10px; }
+
+.setting-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.setting-group label { font-weight: bold; color: #a100f2; }
+.setting-group input, .setting-group select {
+    background: rgba(0,0,0,0.5);
+    color: white;
+    border: 1px solid #6a00f4;
+    padding: 8px;
+    border-radius: 5px;
+    width: 120px;
+}
+
+.close-btn {
+    margin-top: 15px;
+    background: #f20089;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* --- TOAST NOTIFICATIONS --- */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+}
+
+.toast {
+    background: rgba(45, 0, 247, 0.9);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    border-left: 5px solid #00ff87;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    font-weight: bold;
+    animation: slideIn 0.3s ease-out forwards;
+}
+.toast.error { border-left-color: #ff2a2a; }
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}

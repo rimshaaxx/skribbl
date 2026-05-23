@@ -1,0 +1,457 @@
+/* --- 1. MASTER LAYOUT --- */
+.game-master-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    padding: 15px;
+    gap: 15px;
+    box-sizing: border-box;
+    z-index: 1;
+}
+
+/* Reusable Glass Panel (Matches Lobby) */
+.glass-panel {
+    background: rgba(45, 0, 247, 0.15);
+    backdrop-filter: blur(12px);
+    border: 2px solid rgba(137, 0, 242, 0.3);
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* --- 2. TOP: DRAWING TOOLS --- */
+.drawing-tools {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 20px;
+    flex-wrap: wrap; /* Allows wrapping on smaller screens */
+    transition: 0.3s opacity;
+}
+
+.hidden-tools {
+    display: none !important;
+}
+
+.tool-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(106, 0, 244, 0.5);
+}
+
+.tool-btn, .action-btn {
+    background: transparent;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px;
+    border-radius: 8px;
+    transition: 0.2s;
+    filter: grayscale(100%);
+    opacity: 0.7;
+}
+
+.tool-btn:hover, .action-btn:hover {
+    filter: grayscale(0%);
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.tool-btn.active {
+    filter: grayscale(0%);
+    opacity: 1;
+    background: rgba(242, 0, 137, 0.3);
+    box-shadow: 0 0 10px rgba(242, 0, 137, 0.5);
+}
+
+/* Dropdown */
+.brush-dropdown {
+    background: transparent;
+    color: white;
+    border: none;
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    outline: none;
+    cursor: pointer;
+}
+.brush-dropdown option { background: #1e3a5f; }
+
+/* Brush Sizes */
+.size-btn {
+    background: white;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.size-1 { width: 6px; height: 6px; }
+.size-2 { width: 12px; height: 12px; }
+.size-3 { width: 20px; height: 20px; }
+.size-4 { width: 30px; height: 30px; }
+
+.size-btn:hover, .size-btn.active {
+    border-color: #f20089;
+    box-shadow: 0 0 10px #f20089;
+    transform: scale(1.2);
+}
+
+/* Color Palette */
+.color-btn {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    cursor: pointer;
+    transition: 0.2s;
+}
+.color-btn:hover, .color-btn.active {
+    border-color: white;
+    transform: scale(1.2);
+    box-shadow: 0 0 10px currentColor; /* Glows whatever color it is! */
+}
+
+.custom-color-picker {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: transparent;
+}
+
+/* --- 3. MIDDLE: PLAYERS, CANVAS, CHAT --- */
+.game-layout {
+    display: flex;
+    flex-grow: 1;
+    gap: 15px;
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+.sidebar-header {
+    text-align: center;
+    font-weight: bold;
+    color: #38fedc;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(56, 254, 220, 0.3);
+}
+
+/* Player List */
+.game-player-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+}
+
+.game-player-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 8px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.game-player-card img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.1);
+}
+
+.player-info {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.player-info .name { font-weight: bold; font-size: 1rem; color: white; }
+.player-info .score { font-size: 0.85rem; color: #f5f557; }
+
+/* The pencil icon when someone is drawing */
+.is-drawing {
+    border: 2px solid #00ff87;
+    box-shadow: 0 0 10px rgba(0, 255, 135, 0.4);
+}
+.drawing-icon { display: none; font-size: 1.2rem; }
+.is-drawing .drawing-icon { display: block; animation: bounce 0.5s infinite alternate; }
+
+/* Chat Box */
+.chat-messages {
+    flex-grow: 1;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+/* Chat Input Area */
+.chat-input-wrapper {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input-wrapper input {
+    flex-grow: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #6a00f4;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    outline: none;
+}
+.chat-input-wrapper input:focus { border-color: #f20089; }
+
+.send-btn {
+    background: #6a00f4;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 15px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.send-btn:hover { background: #8900f2; transform: scale(1.05); }
+/* Custom Chat Message Colors for Guesses! */
+.chat-msg { font-size: 0.95rem; line-height: 1.3; }
+.chat-msg .author { font-weight: bold; color: #bc00dd; }
+.chat-msg.system { color: #38fedc; font-style: italic; }
+.chat-msg.correct { color: #00ff87; font-weight: bold; background: rgba(0,255,135,0.1); padding: 5px; border-radius: 5px;}
+.chat-msg.close { color: #f5f557; font-style: italic; background: rgba(245,245,87,0.1); padding: 5px; border-radius: 5px;}
+
+/* --- 4. THE CANVAS --- */
+.canvas-wrapper {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.2);
+    overflow: hidden; /* Keeps the white canvas nicely contained */
+}
+
+#drawingCanvas {
+    background-color: white; /* Pure white drawing board! */
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.1);
+    /* The dynamic cursor will be applied via JS! */
+    cursor: crosshair; 
+}
+
+/* Canvas Overlay (For text like "Rose is drawing...") */
+.canvas-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+.canvas-overlay.hidden { display: none; }
+#overlayText {
+    font-family: 'DynaPuff', cursive;
+    font-size: 3rem;
+    color: white;
+    text-shadow: 0 0 20px #bc00dd;
+    text-align: center;
+}
+
+/* --- 5. BOTTOM: HUD --- */
+.bottom-hud {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    font-family: 'DynaPuff', cursive;
+}
+
+/* Timer */
+.timer-container {
+    font-size: 2rem;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: 0.3s;
+}
+
+/* The Heartbeat Animation! */
+.timer-container.urgent {
+    color: #ff2a2a;
+    text-shadow: 0 0 15px #ff2a2a;
+    animation: heartbeat 1s infinite;
+}
+@keyframes heartbeat {
+    0% { transform: scale(1); }
+    15% { transform: scale(1.3); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+}
+
+/* Word Display */
+.word-display {
+    font-size: 2.5rem;
+    letter-spacing: 8px; /* Spaces out the blanks _ _ _ */
+    color: #fff;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px #f20089;
+}
+
+.round-display {
+    font-size: 1.5rem;
+    color: #a100f2;
+}
+
+/* --- 6. WORD SELECTION OVERLAYS --- */
+.canvas-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+.canvas-overlay.hidden { display: none; }
+
+.word-selection-box {
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    animation: popIn 0.3s ease-out;
+}
+.word-selection-box.hidden { display: none; }
+
+.word-selection-box h2 {
+    color: white;
+    font-family: 'DynaPuff', cursive;
+    text-shadow: 0 0 10px #f20089;
+    margin: 0;
+}
+
+/* Normal Mode Buttons */
+.word-options {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.word-btn {
+    background: rgba(106, 0, 244, 0.6);
+    color: white;
+    border: 2px solid #a100f2;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.word-btn:hover {
+    background: #f20089;
+    border-color: #ffb6c1;
+    transform: scale(1.1);
+    box-shadow: 0 0 15px #f20089;
+}
+
+/* Custom Mode Inputs */
+.custom-word-input-group {
+    display: flex;
+    gap: 10px;
+}
+.custom-word-input-group input {
+    padding: 10px 15px;
+    font-size: 1.2rem;
+    border-radius: 8px;
+    border: 2px solid #38fedc;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    outline: none;
+}
+.custom-word-input-group input:focus { box-shadow: 0 0 15px rgba(56, 254, 220, 0.5); }
+
+.action-btn-neon {
+    background: linear-gradient(45deg, #2d00f7, #f20089);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.action-btn-neon:hover { transform: scale(1.05); box-shadow: 0 0 15px #f20089; }
+
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- 7. SPECTATOR DASHBOARD --- */
+.guesser-bar {
+    justify-content: space-around;
+    width: 100%;
+}
+
+.guesser-logo {
+    font-family: 'DynaPuff', cursive;
+    font-size: 2rem;
+    display: flex;
+    gap: 3px;
+    text-shadow: 0px 4px 15px rgba(255, 255, 255, 0.2);
+}
+
+.guesser-logo span { animation: bounce 1.5s infinite ease-in-out; }
+.guesser-logo span:nth-child(1) { animation-delay: 0.0s; }
+.guesser-logo span:nth-child(2) { animation-delay: 0.1s; }
+.guesser-logo span:nth-child(3) { animation-delay: 0.2s; }
+.guesser-logo span:nth-child(4) { animation-delay: 0.3s; }
+.guesser-logo span:nth-child(5) { animation-delay: 0.4s; }
+.guesser-logo span:nth-child(6) { animation-delay: 0.5s; }
+.guesser-logo span:nth-child(7) { animation-delay: 0.6s; }
+.guesser-logo span:nth-child(8) { animation-delay: 0.7s; }
+.guesser-logo span:nth-child(9) { animation-delay: 0.8s; }
+.guesser-logo span:nth-child(10) { animation-delay: 0.9s; }
+.guesser-logo span:nth-child(11) { animation-delay: 1.0s; }
+.guesser-logo span:nth-child(12) { animation-delay: 1.1s; }
+.guesser-logo span:nth-child(13) { animation-delay: 1.2s; }
+
+.funny-taunt {
+    font-size: 1.3rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: bold;
+    color: #38fedc; /* Neon cyan */
+    background: rgba(0, 0, 0, 0.4);
+    padding: 10px 25px;
+    border-radius: 12px;
+    border: 1px solid rgba(56, 254, 220, 0.5);
+    transition: opacity 0.5s; /* Creates the fade effect */
+}
