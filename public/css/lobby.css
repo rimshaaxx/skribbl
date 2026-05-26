@@ -314,3 +314,60 @@
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
+/* ========================================== */
+/* MOBILE RESPONSIVE DESIGN (LOBBY SCREEN)    */
+/* ========================================== */
+@media (max-width: 768px) {
+    .lobby-container {
+        width: 95vw;
+        height: 98dvh;
+        gap: 10px;
+    }
+
+    /* Stack the top bar */
+    .top-bar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        text-align: center;
+    }
+
+    .top-buttons {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Stack Player Grid and Chat */
+    .lobby-main {
+        flex-direction: column; 
+    }
+
+    .player-section {
+        flex: none;
+        height: 35%; /* Gives top part to players */
+        padding: 10px;
+    }
+
+    .chat-section {
+        flex: 1; /* Gives bottom part to chat */
+        min-width: 100%;
+        padding: 10px;
+    }
+
+    /* Stack the bottom code bar */
+    .bottom-bar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .code-display {
+        font-size: 1.2rem;
+    }
+
+    /* Shrink settings modal */
+    .modal-content {
+        width: 90%;
+        padding: 20px;
+    }
+}

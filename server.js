@@ -2,7 +2,13 @@ const express = require('express');
 const http = require('http');
 const socketio = require('socket.io');
 const path = require('path');
-const wordsList = require('./words.js');
+const wordsListRaw = require('./words.js');
+
+// ==========================================
+// FIX 1: THE DUPLICATE DESTROYER
+// This automatically removes any duplicate words you accidentally typed!
+// ==========================================
+const wordsList = [...new Set(wordsListRaw.map(w => w.toLowerCase()))];
 
 const app = express();
 const server = http.createServer(app);
@@ -19,13 +25,25 @@ function generateRoomCode() {
     return code;
 }
 
-function getRandomWords(count) {
-    const shuffled = [...wordsList].sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, count);
+// ==========================================
+// FIX 2: THE "DECK OF CARDS" SYSTEM
+// ==========================================
+function getWordsForRoom(room, count) {
+    // If this room doesn't have a deck, or the deck is almost empty, give them a fresh shuffled deck!
+    if (!room.wordDeck || room.wordDeck.length < count) {
+        room.wordDeck = [...wordsList].sort(() => 0.5 - Math.random());
+    }
+    
+    // Draw the top 4 words and REMOVE them from the deck so they don't repeat
+    const choices = [];
+    for (let i = 0; i < count; i++) {
+        choices.push(room.wordDeck.pop());
+    }
+    return choices;
 }
 
 function getBlanks(word) {
-    return word.replace(/[a-zA-Z0-9]/g, '_ ').trim();
+    return word.replace(/[a-zA-Z0-9]/g, '_'); 
 }
 
 // Math function to check if a typo is "Close" (1 or 2 letters off)
@@ -57,9 +75,15 @@ function startNextTurn(io, roomCode) {
         room.isTransitioning = true; // Lock the room!
         io.to(roomCode).emit('gameOver', room.players);
         
-        // Give them 5 seconds to view the winner, PLUS 10 seconds to load the Lobby safely!
         setTimeout(() => {
-            if (roomsData[roomCode]) roomsData[roomCode].isTransitioning = false;
+            if (roomsData[roomCode]) {
+                roomsData[roomCode].isTransitioning = false;
+                
+                // ==========================================
+                // FIX: UNLOCK THE ROOM FOR NEW PLAYERS
+                // ==========================================
+                roomsData[roomCode].game = null; 
+            }
         }, 15000); 
         return;
     }
@@ -70,7 +94,7 @@ function startNextTurn(io, roomCode) {
     room.game.correctGuessers = []; // Reset guessers for the new round!
 
     const isNormalMode = room.settings.wordMode === 'normal';
-    const wordChoices = isNormalMode ? getRandomWords(4) : [];
+        const wordChoices = isNormalMode ? getWordsForRoom(room, 4) : [];
     room.game.wordChoices = wordChoices; 
 
     io.to(roomCode).emit('turnStarting', {
@@ -97,10 +121,28 @@ io.on('connection', (socket) => {
 
     socket.on('joinRoom', (playerData) => {
         const roomCode = playerData.roomCode.toUpperCase(); 
-        if (io.sockets.adapter.rooms.has(roomCode) && roomsData[roomCode]) {
-            if (roomsData[roomCode].players.length >= roomsData[roomCode].settings.players) { socket.emit('roomError', 'Room is full!'); return; }
-            socket.join(roomCode); socket.emit('roomJoined', roomCode);
-        } else { socket.emit('roomError', 'Room not found!'); }
+        const roomExists = io.sockets.adapter.rooms.has(roomCode);
+        const room = roomsData[roomCode];
+
+        if (roomExists && room) {
+            // ==========================================
+            // FIX: BLOCK LATE JOINERS
+            // ==========================================
+            if (room.game !== null) {
+                socket.emit('roomError', 'Game is already in progress! Wait until they return to the lobby.');
+                return;
+            }
+
+            if (room.players.length >= room.settings.players) { 
+                socket.emit('roomError', 'Room is full!'); 
+                return; 
+            }
+            
+            socket.join(roomCode); 
+            socket.emit('roomJoined', roomCode);
+        } else { 
+            socket.emit('roomError', 'Room not found!'); 
+        }
     });
 
     socket.on('joinLobby', (data) => {
@@ -271,28 +313,67 @@ io.on('connection', (socket) => {
     socket.on('clear', (roomCode) => socket.to(roomCode).emit('onClear'));
     socket.on('syncCanvas', (data) => socket.to(data.roomCode).emit('onSyncCanvas', data.image));
 
+    // ==========================================
+    // DISCONNECT LOGIC (UPGRADED)
+    // ==========================================
     socket.on('disconnect', () => {
         for (const roomCode in roomsData) {
             const room = roomsData[roomCode];
             const playerIndex = room.players.findIndex(p => p.id === socket.id);
+            
             if (playerIndex !== -1) {
+                // If they are moving from Lobby to Game, DO NOT delete them!
                 if (room.isTransitioning) break;
 
                 const leavingPlayer = room.players[playerIndex];
+                
+                // 1. Remove them from the player list
                 room.players.splice(playerIndex, 1);
                 
+                // 2. If the room is empty, delete it completely
                 if (room.players.length === 0) {
                     if (room.game && room.game.timer) clearInterval(room.game.timer);
-                    delete roomsData[roomCode]; break;
+                    delete roomsData[roomCode]; 
+                    break;
                 }
                 
+                // 3. If the Host left, pass the crown
                 if (leavingPlayer.isHost) {
-                    room.players[0].isHost = true; room.hostId = room.players[0].id;
+                    room.players[0].isHost = true; 
+                    room.hostId = room.players[0].id;
                     io.to(roomCode).emit('chatMessage', { username: 'System', text: `👑 ${room.players[0].username} is the new Host!`, type: 'system' });
                 }
+                
                 io.to(roomCode).emit('updatePlayers', room.players);
                 io.to(roomCode).emit('chatMessage', { username: 'System', text: `🚪 ${leavingPlayer.username} left.`, type: 'system' });
-                break;
+
+                // ==========================================
+                // FIX: IF THE CURRENT DRAWER LEAVES, SKIP TURN!
+                // ==========================================
+                if (room.game) {
+                    // Shift the currentDrawerIndex back by 1 so the next person in line doesn't get skipped!
+                    if (playerIndex <= room.game.currentDrawerIndex) {
+                        room.game.currentDrawerIndex--;
+                    }
+
+                    // If the person who left was actively drawing or picking a word...
+                    if (leavingPlayer.id === room.game.drawerId) {
+                        if (room.game.timer) clearInterval(room.game.timer); // Stop the clock!
+                        
+                        io.to(roomCode).emit('chatMessage', { 
+                            username: 'System', 
+                            text: `⚠️ The Drawer disconnected! Skipping to next player...`, 
+                            type: 'system' 
+                        });
+                        
+                        // Wait 3 seconds so people can read the message, then start the next turn
+                        setTimeout(() => {
+                            if (roomsData[roomCode]) startNextTurn(io, roomCode);
+                        }, 3000);
+                    }
+                }
+                
+                break; // Stop looping through rooms
             }
         }
     });

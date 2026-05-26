@@ -113,8 +113,11 @@
                     </div>
 
                     <!-- 3. Guessers Waiting Screen -->
-                    <div id="waitingForDrawer" class="word-selection-box glass-panel">
-                        <h2 id="overlayText">Waiting for game to start...</h2>
+                    <div id="waitingForDrawer" class="word-selection-box hidden">
+                        <div class="waiting-card glass-panel">
+                            <div class="waiting-spinner"></div>
+                            <h3 id="overlayText">Waiting for players to load...</h3>
+                        </div>
                     </div>
                     <!-- 4. Game Over Screen -->
                     <div id="gameOverScreen" class="word-selection-box glass-panel hidden">
@@ -160,7 +163,8 @@
     <!-- TOAST NOTIFICATIONS -->
     <div id="toastContainer" class="toast-container"></div>
 
+<script src="js/audio.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="js/game.js"></script>
+    <script src="js/game.js"></script> <!-- THIS MUST SAY game.js! -->
 </body>
 </html>

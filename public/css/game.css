@@ -251,11 +251,11 @@
 }
 
 #drawingCanvas {
-    background-color: white; /* Pure white drawing board! */
+    background-color: white; 
     border-radius: 8px;
     box-shadow: 0 0 20px rgba(255,255,255,0.1);
-    /* The dynamic cursor will be applied via JS! */
     cursor: crosshair; 
+    touch-action: none; /* CRITICAL FOR MOBILE DRAWING! */
 }
 
 /* Canvas Overlay (For text like "Rose is drawing...") */
@@ -270,13 +270,7 @@
     z-index: 10;
 }
 .canvas-overlay.hidden { display: none; }
-#overlayText {
-    font-family: 'DynaPuff', cursive;
-    font-size: 3rem;
-    color: white;
-    text-shadow: 0 0 20px #bc00dd;
-    text-align: center;
-}
+
 
 /* --- 5. BOTTOM: HUD --- */
 .bottom-hud {
@@ -312,13 +306,7 @@
 }
 
 /* Word Display */
-.word-display {
-    font-size: 2.5rem;
-    letter-spacing: 8px; /* Spaces out the blanks _ _ _ */
-    color: #fff;
-    text-transform: uppercase;
-    text-shadow: 0 0 10px #f20089;
-}
+
 
 .round-display {
     font-size: 1.5rem;
@@ -454,4 +442,127 @@
     border-radius: 12px;
     border: 1px solid rgba(56, 254, 220, 0.5);
     transition: opacity 0.5s; /* Creates the fade effect */
+}
+
+/* --- 8. BEAUTIFUL WORD BLANKS --- */
+.word-display {
+    display: flex;
+    gap: 25px; /* Big space between different words */
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.word-group {
+    display: flex;
+    gap: 8px; /* Small space between letters */
+}
+
+.letter-box {
+    width: 35px;
+    height: 45px;
+    border-bottom: 4px solid #fff;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    font-size: 2rem;
+    font-family: 'Outfit', sans-serif;
+    font-weight: bold;
+    color: #38fedc; /* Neon cyan for revealed letters */
+    padding-bottom: 5px;
+    text-transform: uppercase;
+}
+
+/* --- 9. SLEEK WAITING OVERLAY --- */
+.waiting-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 40px 60px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+}
+
+.waiting-card h3 {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.4rem;
+    color: #e2e8f0;
+    font-weight: 400;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+.waiting-spinner {
+    width: 45px;
+    height: 45px;
+    border: 4px solid rgba(242, 0, 137, 0.2);
+    border-top-color: #f20089;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin { 
+    100% { transform: rotate(360deg); } 
+}
+
+/* ========================================== */
+/* 10. MOBILE RESPONSIVE DESIGN (SCROLLABLE)  */
+/* ========================================== */
+@media (max-width: 768px) {
+    body { overflow: auto !important; } /* Let the user scroll! */
+
+    .game-master-container {
+        height: auto;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        padding: 5px;
+        gap: 15px;
+    }
+    
+    /* 1. Make the Canvas Massive! */
+    .canvas-wrapper {
+        flex: none; 
+        width: 100%;
+    }
+    #drawingCanvas {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 4 / 3; 
+        max-height: none; /* Do not squish it! */
+        object-fit: contain;
+    }
+
+    /* 2. Stack the Chat Box Below */
+    .game-layout {
+        flex: none;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+    .sidebar.right-sidebar {
+        width: 100%;
+        height: 350px; /* Nice big chat box to scroll down to */
+        flex: none;
+    }
+
+    /* 3. Horizontal Swiping for Tools & Leaderboard */
+    .drawing-tools { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; }
+    .tool-group { flex-shrink: 0; }
+    .sidebar.left-sidebar { height: auto; width: 100%; }
+    .sidebar-header { display: none; } 
+    .game-player-list { flex-direction: row; overflow-x: auto; gap: 10px; }
+    .game-player-card { min-width: 130px; }
+
+    /* 4. Tidy up the HUD */
+    .bottom-hud {
+        flex-direction: column;
+        text-align: center;
+        gap: 10px;
+        flex: none;
+    }
+    .word-display { gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .letter-box { width: 15px; height: 20px; font-size: 1.2rem; }
 }

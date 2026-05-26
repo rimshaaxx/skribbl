@@ -327,3 +327,37 @@ body {
     font-size: 1.5rem;
     vertical-align: middle;
 }
+
+/* ========================================== */
+/* MOBILE RESPONSIVE DESIGN (HOME SCREEN)     */
+/* ========================================== */
+@media (max-width: 768px) {
+    body {
+        height: auto;
+        min-height: 100dvh;
+        overflow-y: auto; /* Allows scrolling on small phones */
+        padding: 20px 0;
+        align-items: flex-start;
+    }
+
+    .logo {
+        font-size: 3.5rem; /* Make logo smaller */
+        margin-bottom: 20px;
+    }
+
+    .panels-container {
+        flex-direction: column; /* Stacks panels vertically! */
+        align-items: center;
+        gap: 20px;
+    }
+
+    .panel {
+        width: 90%; /* Let panels fill the phone screen */
+        padding: 20px;
+    }
+
+    .footer {
+        margin-top: 30px;
+        margin-bottom: 20px;
+    }
+}
