@@ -51,8 +51,8 @@ code
 
 Bash
 
-    git clone https://github.com/YOUR_USERNAME/skribbl-clone.git
-    cd skribbl-clone
+    git clone https://github.com/rimshaaxx/skribbl.git
+    cd skribbl
 
     
 *Install dependencies:*
